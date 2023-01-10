@@ -13,15 +13,15 @@ let timeout = 0;
 const loadTable = () => {
     for (rowId in table) {
         let row = '';
-        for (cellId in table) {
-           row += loadButton(rowId, cellId);
+        for (cellId in table[rowId]) {
+            row += loadButton(rowId, cellId);
         }
         rows[rowId].innerHTML = row;
     }
     [...document.getElementsByClassName('cell')].forEach((_) => _.addEventListener('click', () => click(_)))
 };
 
-const loadButton = () => {
+const loadButton = (rowId, cellId) => {
     return `<button class="cell" id="${rowId}-${cellId}">${table[rowId][cellId]}</button>`;
 }
 
@@ -29,24 +29,25 @@ const click = (button) => {
     if (timeoutTriggered) return;
     const [rowId, cellId] = button.id.split('-');
     if (table[rowId][cellId] != '') return alert("Invalid cell. Please, try another one!");
-    table[rowId][cellId] = player < 0 ? "O": "X";
+    table[rowId][cellId] = player < 0 ? "O" : "X";
     player = -player;
     loadTable();
     const winner = checkWhoWon();
-    if (winner.length == 1) message(`Player ${winner} won!`);
-    if (winner.length > 1) message("Draw!");
+    console.log(winner)
+    if (winner?.length == 1) message(`Player ${winner} won!`);
+    if (winner?.length > 1) message("Draw!");
 };
 
 const checkWhoWon = () => {
     const wonCases = [
-        [[0,0],[0,1],[0,2]],
-        [[1,0],[1,1],[1,2]],
-        [[2,0],[2,1],[2,2]],
-        [[0,0],[1,0],[2,0]],
-        [[0,1],[1,1],[2,1]],
-        [[0,2],[1,2],[2,2]],
-        [[0,2],[1,1],[2,0]],
-        [[0,0],[1,1],[2,2]]
+        [[0, 0], [0, 1], [0, 2]],
+        [[1, 0], [1, 1], [1, 2]],
+        [[2, 0], [2, 1], [2, 2]],
+        [[0, 0], [1, 0], [2, 0]],
+        [[0, 1], [1, 1], [2, 1]],
+        [[0, 2], [1, 2], [2, 2]],
+        [[0, 2], [1, 1], [2, 0]],
+        [[0, 0], [1, 1], [2, 2]]
     ];
     let winner;
     for (wonCase of wonCases) {
@@ -57,8 +58,9 @@ const checkWhoWon = () => {
         }
     }
 
+    console.log({ winner })
+    if (winner) return winner ? winner : '';
     if (table.every(_ => _.join("").length === 3)) return "XO";
-    return winner ? winner : '';
 }
 const message = (text) => {
     msg.innerHTML = text;
